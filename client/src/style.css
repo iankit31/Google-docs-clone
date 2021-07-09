@@ -34,7 +34,7 @@ body{
     box-shadow: 0 0 5px rgba(0, 0, 0, 1);
 
 }
-
+/*
 @page{
     margin: 1in;
 }
@@ -55,4 +55,4 @@ body{
     .container .ql-container.ql-snow {
         display: none;
     }
-}
+} */
