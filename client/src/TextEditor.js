@@ -4,6 +4,7 @@ import "quill/dist/quill.snow.css"
 import { io } from 'socket.io-client'
 import {useParams}  from "react-router-dom"
 
+const SAVE_INTERVAL_MS = 2000
 const TOOLBAR_OPTIONS = [
     [{header: [1,2,3,4,5,6,false]}], 
     [{ font: []}],
@@ -30,7 +31,7 @@ export default function TextEditor() {
        }
     },[])
 
-    useEffect(()=>{
+    useEffect(()=>{ 
        if(socket == null || quill == null) return;
 
        socket.once("load-document",document=>{
@@ -40,6 +41,18 @@ export default function TextEditor() {
        socket.emit("get-document",documentId) 
 
     },[socket,quill,documentId])
+
+    useEffect(()=>{
+        if(socket == null || quill == null) return;
+
+        const interval = setInterval(()=>{
+            socket.emit("save-document",quill.getContents())
+        },SAVE_INTERVAL_MS)
+
+        return ()=>{
+            clearInterval(interval)
+        }
+    },[socket,quill])
 
     useEffect(()=>{
         if(socket == null || quill == null ) return
@@ -79,7 +92,7 @@ export default function TextEditor() {
             theme: "snow" , 
             modules: {toolbar: TOOLBAR_OPTIONS},
         })
-        q.disable(false)
+        q.enable(false)
         q.setText('Loading...')
         setQuill(q)
     },[])
@@ -88,4 +101,3 @@ export default function TextEditor() {
         <div className=" container" ref={wrapperRef}></div>
     )
 }
-
